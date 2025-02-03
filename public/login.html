@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - E-commerce</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>Login</h1>
+    <form id="login-form">
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="input-group">
+        <button type="submit">Login</button>
+      </div>
+      <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+          alert('Login successful!');
+          
+          window.location.href = '/';
+        } else {
+          alert(data.message || 'Login failed!');
+        }
+      })
+      .catch(err => console.error('Error during login:', err));
+    });
+  </script>
+</body>
+</html>

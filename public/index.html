@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-commerce Home Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="logo">E-Commerce Store</a>
+
+      <div id="auth-buttons" class="auth-buttons">
+        <button id="signup-btn" onclick="window.location.href='signup.html'">Signup</button>
+        <button id="login-btn" onclick="window.location.href='login.html'">Login</button>
+        
+        <span id="user-email" class="user-email"></span>
+        <button id="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Welcome to Our E-Commerce Store!</h1>
+    <div id="product-list" class="product-list"></div>
+  </div>
+
+  <script>
+    const authToken = localStorage.getItem('authToken');
+    const authButtons = document.getElementById('auth-buttons');
+    const signupBtn = document.getElementById('signup-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const userEmailSpan = document.getElementById('user-email');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (authToken) {
+      const decodedToken = JSON.parse(atob(authToken.split('.')[1]));
+      const userEmail = decodedToken.email;
+      
+      userEmailSpan.textContent = `Logged in as: ${userEmail}`;
+      signupBtn.style.display = 'none'; 
+      loginBtn.style.display = 'none';  
+      logoutBtn.style.display = 'inline-block'; 
+    } else {
+      
+      signupBtn.style.display = 'inline-block';
+      loginBtn.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
+      userEmailSpan.style.display = 'none';
+    }
+
+    fetch('/products')
+      .then(response => response.json())
+      .then(products => {
+        const productList = document.getElementById('product-list');
+        
+        products.forEach(product => {
+          const productCard = document.createElement('div');
+          productCard.classList.add('product-card');
+          
+          productCard.innerHTML = `
+            <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-description">${product.description}</p>
+            <p class="product-price">$${product.price}</p>
+          `;
+          
+          productList.appendChild(productCard);
+        });
+      })
+      .catch(error => console.error('Error fetching products:', error));
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>
