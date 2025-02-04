@@ -2,15 +2,25 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: latest
     commands:
+      - echo Installing dependencies...
       - npm install
+
   build:
     commands:
-      - npm run build || echo "No build script, skipping..."
+      - echo Building the application...
+      - npm run build || echo "No build script found, skipping."
+
   post_build:
     commands:
-      - zip -r app.zip .
+      - echo Build completed successfully.
 
 artifacts:
   files:
-    - app.zip
+    - public/**/*
+    - server.js
+    - package.json
+    - package-lock.json
+  discard-paths: no
