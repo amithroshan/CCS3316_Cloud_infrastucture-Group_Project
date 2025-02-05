@@ -3,24 +3,25 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: latest
+      nodejs: 18          # Using Node.js 18 for compatibility
     commands:
-      - echo Installing dependencies...
-      - npm install
+      - echo "Installing dependencies..."
+      - npm install       # Install Node.js dependencies
 
   build:
     commands:
-      - echo Building the application...
-      - npm run build || echo "No build script found, skipping."
+      - echo "No build step required for static files."
 
   post_build:
     commands:
-      - echo Build completed successfully.
+      - echo "Build phase completed successfully."
 
 artifacts:
   files:
-    - public/**/*
-    - server.js
-    - package.json
-    - package-lock.json
+    - public/**/*         # Frontend static files (HTML, CSS)
+    - server.js           # Backend entry point
+    - package.json        # For dependency management
+    - package-lock.json   # Locks dependencies for consistency
+    - .gitignore          # Optional but good for completeness
+    - README.md           # Documentation (optional)
   discard-paths: no
