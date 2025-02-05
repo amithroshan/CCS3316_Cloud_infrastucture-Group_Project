@@ -2,40 +2,33 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { MongoClient, ServerApiVersion } = require('mongodb');
 const { body, validationResult } = require('express-validator');
 const app = express();
 const port = 3000;
 
-const uri = "mongodb+srv://pasindusahan001:MFUPClMP25UuqFN9@cluster-01.ywwt1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster-01";
+const AWS = require('aws-sdk');
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+// Set region, if not already configured via CLI
+AWS.config.update({ region: 'us-east-1' }); // Adjust if needed, based on your setup
+
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json()); 
 
 async function getProducts() {
+  const params = {
+    TableName: 'products', // DynamoDB table for products
+  };
+
   try {
-    await client.connect();
-    const database = client.db('ecommerce');
-    const productsCollection = database.collection('products');
-    const products = await productsCollection.find({}).toArray();
-    return products;
+    const result = await dynamoDB.scan(params).promise(); // Scans the table for all items
+    return result.Items; // Return all products
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
   }
 }
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 app.get('/products', async (req, res) => {
   const products = await getProducts();
@@ -46,10 +39,16 @@ app.get('/products', async (req, res) => {
   }
 });
 
-async function getUsersCollection() {
-  const database = client.db('ecommerce');
-  return database.collection('users');
-}
+
+app.get('/products', async (req, res) => {
+  const products = await getProducts();
+  if (products.length === 0) {
+    res.status(404).send("No products found.");
+  } else {
+    res.json(products);
+  }
+});
+
 
 app.post(
   '/signup',
@@ -64,17 +63,28 @@ app.post(
     const { email, password } = req.body;
 
     try {
-      const usersCollection = await getUsersCollection();
-      const existingUser = await usersCollection.findOne({ email });
+      const existingUserParams = {
+        TableName: 'users',
+        Key: { email },
+      };
 
-      if (existingUser) {
+      const existingUser = await dynamoDB.get(existingUserParams).promise();
+
+      if (existingUser.Item) {
         return res.status(400).json({ message: 'User already exists' });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const newUser = { email, password: hashedPassword };
-      await usersCollection.insertOne(newUser);
+      const newUser = {
+        TableName: 'users',
+        Item: {
+          email,
+          password: hashedPassword,
+        },
+      };
+
+      await dynamoDB.put(newUser).promise();
 
       res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
@@ -83,6 +93,7 @@ app.post(
     }
   }
 );
+
 
 app.get('/signup', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'signup.html'));
@@ -102,20 +113,24 @@ app.post(
     const { email, password } = req.body;
 
     try {
-      const usersCollection = await getUsersCollection();
-      const user = await usersCollection.findOne({ email });
+      const userParams = {
+        TableName: 'users',
+        Key: { email },
+      };
 
-      if (!user) {
+      const user = await dynamoDB.get(userParams).promise();
+
+      if (!user.Item) {
         return res.status(400).json({ message: 'Invalid email or password' });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.Item.password);
 
       if (!isMatch) {
         return res.status(400).json({ message: 'Invalid email or password' });
       }
 
-      const token = jwt.sign({ userId: user._id, email: user.email }, 'your_jwt_secret', { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user.Item.email, email: user.Item.email }, 'your_jwt_secret', { expiresIn: '1h' });
 
       res.json({ message: 'Login successful', token });
     } catch (error) {
@@ -125,6 +140,7 @@ app.post(
   }
 );
 
+
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
@@ -132,3 +148,4 @@ app.get('/login', (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
