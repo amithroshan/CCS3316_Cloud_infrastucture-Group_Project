@@ -7,6 +7,9 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - npm install
+      # Make scripts executable
+      - chmod +x scripts/stop_server.sh
+      - chmod +x scripts/start_server.sh
 
   build:
     commands:
@@ -18,12 +21,13 @@ phases:
 
 artifacts:
   files:
-    - appspec.yml         # ✅ Include appspec.yml for CodeDeploy
-    - scripts/**/*        # ✅ Include all deployment scripts
+    - appspec.yml         # Include appspec.yml for CodeDeploy
+    - scripts/stop_server.sh  # Include the stop script
+    - scripts/start_server.sh # Include the start script
     - public/**/*         # Frontend static files
     - server.js           # Backend entry point
     - package.json        # Dependency management
     - package-lock.json   # Locks dependencies for consistency
     - .gitignore
     - README.md
-  discard-paths: no
+  discard-paths: no       # Keep directory structure
