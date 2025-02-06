@@ -3,10 +3,10 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18          # Using Node.js 18 for compatibility
+      nodejs: 18
     commands:
       - echo "Installing dependencies..."
-      - npm install       # Install Node.js dependencies
+      - npm install
 
   build:
     commands:
@@ -18,10 +18,12 @@ phases:
 
 artifacts:
   files:
-    - public/**/*         # Frontend static files (HTML, CSS)
+    - appspec.yml         # ✅ Include appspec.yml for CodeDeploy
+    - scripts/**/*        # ✅ Include all deployment scripts
+    - public/**/*         # Frontend static files
     - server.js           # Backend entry point
-    - package.json        # For dependency management
+    - package.json        # Dependency management
     - package-lock.json   # Locks dependencies for consistency
-    - .gitignore          # Optional but good for completeness
-    - README.md           # Documentation (optional)
+    - .gitignore
+    - README.md
   discard-paths: no
