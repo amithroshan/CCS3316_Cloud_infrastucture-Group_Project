@@ -21,13 +21,10 @@ phases:
 
 artifacts:
   files:
-    - appspec.yml         # Include appspec.yml for CodeDeploy
-    - scripts/stop_server.sh  # Include the stop script
-    - scripts/start_server.sh # Include the start script
-    - public/**/*         # Frontend static files
-    - server.js           # Backend entry point
-    - package.json        # Dependency management
-    - package-lock.json   # Locks dependencies for consistency
-    - .gitignore
-    - README.md
-  discard-paths: no       # Keep directory structure
+    - appspec.yml
+    - scripts/             # Include the entire scripts directory
+    - public/**/*
+    - server.js
+    - package.json
+    - package-lock.json
+  discard-paths: no       # Preserve directory structure

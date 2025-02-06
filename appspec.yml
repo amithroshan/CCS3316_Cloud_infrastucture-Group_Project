@@ -1,19 +1,15 @@
 version: 0.0
 os: linux
 
-# Copy files to the destination
+# Copy ALL files to the destination
 files:
-  - source: scripts/stop_server.sh    # Explicitly include the stop script
-    destination: /home/ubuntu/app/scripts
-  - source: scripts/start_server.sh   # Explicitly include the start script
-    destination: /home/ubuntu/app/scripts
-  - source: /                         # Copy all other files
+  - source: /
     destination: /home/ubuntu/app
 
 # Lifecycle hooks
 hooks:
   ApplicationStop:
-    - location: scripts/stop_server.sh
+    - location: scripts/stop_server.sh  # Path is relative to the bundle root
       timeout: 300
       runas: root
   ApplicationStart:
