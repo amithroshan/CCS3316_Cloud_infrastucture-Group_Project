@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Navigating to the application directory..."
-cd /home/ubuntu/app || { echo "Failed to navigate to /home/ubuntu/app"; exit 1; }
+cd /var/www/html/ || { echo "Failed to navigate to /home/ubuntu/app"; exit 1; }
 
 echo "Installing dependencies..."
 npm install
