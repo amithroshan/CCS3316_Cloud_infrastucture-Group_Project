@@ -7,24 +7,19 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - npm install
-      # Make scripts executable
-      - chmod +x scripts/stop_server.sh
-      - chmod +x scripts/start_server.sh
+      - chmod +x scripts/stop_server.sh  # Ensure scripts are executable
 
   build:
     commands:
-      - echo "No build step required for static files."
-
-  post_build:
-    commands:
-      - echo "Build phase completed successfully."
+      - echo "Building..."
 
 artifacts:
   files:
     - appspec.yml
-    - scripts/             # Include the entire scripts directory
+    - scripts/**/*       # ✅ Include the entire scripts directory
     - public/**/*
     - server.js
     - package.json
     - package-lock.json
-  discard-paths: no       # Preserve directory structure
+  base-directory: .      # Ensure paths are relative to the root
+  discard-paths: no      # Preserve directory structure
