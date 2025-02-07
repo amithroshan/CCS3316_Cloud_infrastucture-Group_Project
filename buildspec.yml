@@ -7,7 +7,7 @@ phases:
     commands:
       - echo "Installing dependencies..."
       - npm install
-      - chmod +x scripts/stop_server.sh  # Ensure scripts are executable
+ # Ensure scripts are executable
 
   build:
     commands:
