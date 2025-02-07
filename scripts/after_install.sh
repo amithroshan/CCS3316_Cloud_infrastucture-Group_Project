@@ -13,9 +13,14 @@ echo "Deployment completed successfully."
 
 
 sudo mv public/index.html .
-sudo mv public/login.html .
-sudo mv public/signup.html .
-sudo mv public/style.css .
+sudo mv public/electronic.html .
+sudo mv public/fashion.html .
+sudo mv public/jewellery.html .
+sudo mv public/js/* .
+sudo mv public/css/* .
+sudo mv public/images/* .
+sudo mv public/fonts/* .
+
 sudo yum install -y httpd
 sudo systemctl start httpd
 sudo systemctl enable httpd
