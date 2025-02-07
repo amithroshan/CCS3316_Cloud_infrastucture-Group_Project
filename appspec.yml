@@ -4,7 +4,7 @@ os: linux
 # Copy ALL files to the destination
 files:
   - source: /
-    destination: /home/ubuntu/app
+    destination: /var/www/html/
 
 # Lifecycle hooks
 hooks:
