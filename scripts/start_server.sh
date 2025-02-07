@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navigate to the app directory
-cd /home/ubuntu/app || { echo "Failed to navigate to /home/ubuntu/app"; exit 1; }
+cd /var/www/html/  || { echo "Failed to navigate to /home/ubuntu/app"; exit 1; }
 
 # Install Node.js if not already installed
 if ! which node > /dev/null 2>&1; then
